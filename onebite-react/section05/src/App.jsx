@@ -1,17 +1,13 @@
 import "./App.css";
-import Header from "./components/Header";
-import Main from "./components/main";
-import Footer from "./components/Footer";
+import Register from "./components/Register";
 
 // 컴포넌트(Component)
 function App() {
-    return (
-        <>
-            <Header />
-            <Main />
-            <Footer />
-        </>
-    );
+	return (
+		<>
+			<Register />
+		</>
+	);
 }
 
 export default App;
