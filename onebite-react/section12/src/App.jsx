@@ -1,50 +1,90 @@
 import "./App.css";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { useReducer, useRef } from "react";
 import Home from "./pages/Home";
 import Diary from "./pages/Diary";
 import New from "./pages/New";
 import NotFound from "./pages/Notfound";
-import Button from "./components/Button";
-import getEmotionImage from "./util/get-emotion-image";
+import Edit from "./pages/Edit";
 
-// 1. "/" : 모든 일기를 조회하는 Home 페이지
-// 2. "/new" : 새로운 일기를 작성하는 New 페이지
-// 3. "/diary" : 일기를 상세히 조회하는 Diary 페이지
+const mockData = [
+    {
+        id: 1,
+        createdDate: new Date().getTime(),
+        emotionId: 1,
+        content: "1번 일기 내용",
+    },
+    {
+        id: 2,
+        createdDate: new Date().getTime(),
+        emotionId: 2,
+        content: "2번 일기 내용",
+    },
+];
+
+function reducer(state, action) {
+    switch (action.type) {
+        case "CREATE":
+            console.log(action.data);
+            return [...state, action.data];
+        case "UPDATE":
+            return state.map((item) =>
+                String(item.id) === String(action.data.id) ? action.data : item
+            );
+    }
+}
+
 function App() {
     const nav = useNavigate();
+    const [data, dispatch] = useReducer(reducer, mockData);
+    const idRef = useRef(3);
 
-    const onClickButton = () => {
-        nav("/new");
+    // 새로운 일기 추가
+    const onCreate = (createdDate, emotionId, content) => {
+        dispatch({
+            type: "CREATE",
+            data: {
+                id: idRef.current++,
+                createdDate,
+                emotionId,
+                content,
+            },
+        });
     };
+
+    // 기존 일기 수정
+    const onUpdate = (id, createdDate, emotionId, content) => {
+        dispatch({
+            id,
+            createdDate,
+            emotionId,
+            content,
+        });
+    };
+
+    // 기존 일기 삭제
 
     return (
         <>
-            <Button
-                text={"123"}
-                type={"DEFAULT"}
+            <button
                 onClick={() => {
-                    console.log("123번 버튼 클릭");
+                    onCreate(new Date().getTime(), 1, "hello");
                 }}
-            />
-            <Button
-                text={"123"}
-                type={"POSITIVE"}
+            >
+                일기 추가 테스트
+            </button>
+            <button
                 onClick={() => {
-                    console.log("123번 버튼 클릭");
+                    onUpdate(1, new Date().getTime(), 3, "수정된일기입니다요~");
                 }}
-            />
-            <Button
-                text={"123"}
-                type={"NEGATIVE"}
-                onClick={() => {
-                    console.log("123번 버튼 클릭");
-                }}
-            />
-
+            >
+                일기 수정 테스트
+            </button>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/diary/:id" element={<Diary />} />
                 <Route path="/new" element={<New />} />
+                <Route path="edit/:id" element={<Edit />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>
         </>
